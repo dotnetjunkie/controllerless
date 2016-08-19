@@ -21,6 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\SolidServices.Controllerless.WebApi.Description.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,6 +31,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\SolidServices.Controllerless.WebApi.Description.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -51,18 +53,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CollectionExtensions.cs" />
+    <Compile Include="Internal\CollectionExtensions.cs" />
     <Compile Include="CompositeApiExplorer.cs" />
-    <Compile Include="CompositeDescriptionProvider.cs" />
-    <Compile Include="CompositeDocumentationProvider.cs" />
+    <Compile Include="CompositeTypeDescriptionProvider.cs" />
     <Compile Include="ControllerlessActionDescriptor.cs" />
     <Compile Include="ControllerlessApiExplorer.cs" />
-    <Compile Include="ControllerlessControllerDescriptor.cs" />
-    <Compile Include="ControllerlessParameterDescriptor.cs" />
-    <Compile Include="IDescriptionProvider.cs" />
+    <Compile Include="Internal\ControllerlessControllerDescriptor.cs" />
+    <Compile Include="Internal\ControllerlessParameterDescriptor.cs" />
+    <Compile Include="ITypeDescriptionProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Requires.cs" />
-    <Compile Include="XmlDescriptionProvider.cs" />
+    <Compile Include="Internal\Requires.cs" />
+    <Compile Include="XmlDocumentationTypeDescriptionProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
