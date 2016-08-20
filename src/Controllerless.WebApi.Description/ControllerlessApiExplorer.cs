@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Formatting;
@@ -17,35 +18,48 @@ namespace SolidServices.Controllerless.WebApi.Description
     {
         private readonly IEnumerable<Type> messageTypes;
         private readonly Lazy<Collection<ApiDescription>> descriptions;
-        private readonly Func<Type, string> typeDescriptionSelector;
         private readonly Func<Type, Type> responseTypeSelector;
 
         /// <summary>Constructs a new <see cref="ControllerlessApiExplorer"/>.</summary>
-        /// <param name="controllerName">The name of the controller. Typically 'controllers' or 'queries'.</param>
         /// <param name="messageTypes">The list of messages that this explorer documents.</param>
-        /// <param name="typeDescriptionSelector">Retrieves the description for a given type.</param>
         /// <param name="responseTypeSelector"></param>
         public ControllerlessApiExplorer(
-            string controllerName,
             IEnumerable<Type> messageTypes,
-            Func<Type, string> typeDescriptionSelector,
             Func<Type, Type> responseTypeSelector)
         {
-            Requires.IsNotNull(controllerName, nameof(controllerName));
             Requires.IsNotNull(messageTypes, nameof(messageTypes));
-            Requires.IsNotNull(typeDescriptionSelector, nameof(typeDescriptionSelector));
             Requires.IsNotNull(responseTypeSelector, nameof(responseTypeSelector));
             
             this.messageTypes = messageTypes.ToArray();
-            this.typeDescriptionSelector = typeDescriptionSelector;
             this.responseTypeSelector = responseTypeSelector;
             this.descriptions = new Lazy<Collection<ApiDescription>>(this.GetDescriptions);
-            this.ControllerDescriptor = new ControllerlessControllerDescriptor { ControllerName = controllerName };
+            this.ControllerDescriptor = new ControllerlessControllerDescriptor { ControllerName = "messages" };
             this.RelativePathSelector = actionName => this.ApiPrefix + this.ControllerDescriptor.ControllerName + "/" + actionName;
         }
 
         /// <summary>Gets or sets the prefix for the API. Default value is "api/".</summary>
         public string ApiPrefix { get; set; } = "api/";
+
+        /// <summary>
+        /// Gets or sets the name of the controller in the description. The default is "messages".
+        /// </summary>
+        public string ControllerName
+        {
+            get { return this.ControllerDescriptor.ControllerName; }
+            set { this.ControllerDescriptor.ControllerName = value; }
+        }
+
+        /// <summary>Gets or sets the action name selector. The default returns the the short name of the supplied message type.</summary>
+        public Func<Type, string> ActionNameSelector { get; set; } = type => type.Name;
+
+        /// <summary>Gets or sets the http method selector. The default return HttpMethod.Post for every supplied message type.</summary>
+        public Func<Type, HttpMethod> HttpMethodSelector { get; set; } = type => HttpMethod.Post;
+
+        /// <summary>
+        /// Gets or sets the relative path selector. Builds a relative path based on the action name as returned from
+        /// the <see cref="ActionNameSelector"/>. The default returns the action name prefixed by the 
+        /// <see cref="ApiPrefix"/> and supplied controller name.</summary>
+        public Func<string, string> RelativePathSelector { get; set; }
 
         /// <summary>Gets or sets the parameter source selector. The default always returns FromBody, which means </summary>
         public Func<Type, ApiParameterSource> ParameterSourceSelector { get; set; } = type => ApiParameterSource.FromBody;
@@ -61,17 +75,12 @@ namespace SolidServices.Controllerless.WebApi.Description
         /// </summary>
         public HttpControllerDescriptor ControllerDescriptor { get; set; }
 
-        /// <summary>Gets or sets the action name selector. The default returns the the short name of the supplied message type.</summary>
-        public Func<Type, string> ActionNameSelector { get; set; } = type => type.Name;
-
-        /// <summary>Gets or sets the http method selector. The default return HttpMethod.Post for every supplied message type.</summary>
-        public Func<Type, HttpMethod> HttpMethodSelector { get; set; } = type => HttpMethod.Post;
-
         /// <summary>
-        /// Gets or sets the relative path selector. Builds a relative path based on the action name as returned from
-        /// the <see cref="ActionNameSelector"/>. The default returns the action name prefixed by the 
-        /// <see cref="ApiPrefix"/> and supplied controller name.</summary>
-        public Func<string, string> RelativePathSelector { get; set; }
+        /// Gets or sets the type descriptor selector. Returns a description for the given message type or return type.
+        /// Return an empty string by default.
+        /// </summary>
+        private Func<Type, string> TypeDescriptionSelector { get; set; } = type =>
+            type.GetCustomAttribute<DescriptionAttribute>()?.Description;
 
         /// <summary>
         /// Gets or sets the collection of supported <see cref="MediaTypeFormatter"/>s for decoding request bodies.
@@ -102,7 +111,7 @@ namespace SolidServices.Controllerless.WebApi.Description
             {
                 HttpMethod = this.HttpMethodSelector(messageType),
                 RelativePath = this.RelativePathSelector(actionName),
-                Documentation = this.typeDescriptionSelector(messageType),
+                Documentation = this.TypeDescriptionSelector(messageType),
             };
 
             var parameterSource = this.ParameterSourceSelector(messageType);
@@ -125,7 +134,7 @@ namespace SolidServices.Controllerless.WebApi.Description
             {
                 DeclaredType = responseType,
                 ResponseType = responseType,
-                Documentation = this.typeDescriptionSelector(responseType),
+                Documentation = this.TypeDescriptionSelector(responseType),
             });
 
             desc.SupportedRequestBodyFormatters.AddRange(this.SupportedRequestBodyFormatters);
@@ -157,7 +166,7 @@ namespace SolidServices.Controllerless.WebApi.Description
         {
             return new ApiParameterDescription
             {
-                Documentation = this.typeDescriptionSelector(descriptor.ParameterType),
+                Documentation = this.TypeDescriptionSelector(descriptor.ParameterType),
                 Name = descriptor.ParameterName,
                 ParameterDescriptor = descriptor,
                 Source = parameterSource
