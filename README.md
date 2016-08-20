@@ -114,3 +114,4 @@ c.OperationFilter(() => filter);
 
 The above results in the following Swagger documentation:
 
+![Alt text](swaggerexample.png?raw=true "Swagger example")
