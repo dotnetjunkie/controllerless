@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controllerless.WebApi.Description", "Controllerless.WebApi.Description.csproj", "{7325A177-DD50-4AAC-A899-59C281E532C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controllerless.WebApi.Description", "Controllerless.WebApi.Description\Controllerless.WebApi.Description.csproj", "{7325A177-DD50-4AAC-A899-59C281E532C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controllerless.WebApi", "..\Controllerless.WebApi\Controllerless.WebApi.csproj", "{8AF38C39-4BB8-4D0D-9B3F-B6F1C19A8D08}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controllerless.WebApi", "Controllerless.WebApi\Controllerless.WebApi.csproj", "{8AF38C39-4BB8-4D0D-9B3F-B6F1C19A8D08}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
