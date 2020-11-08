@@ -5,9 +5,9 @@
 [![NuGet](https://img.shields.io/nuget/v/SolidServices.Controllerless.WebApi.Description.svg)](https://www.nuget.org/packages/SolidServices.Controllerless.WebApi.Description/)
 
 
-If you're writing SOLID message based applications, you came to the right place. If not, please [go here](https://github.com/dotnetjunkie/solidservices) to understand what such application design can bring you and your team.
+If you're writing SOLID message-based applications, you came to the right place. If not, please [go here](https://github.com/dotnetjunkie/solidservices) to understand what such application design can bring you and your team.
 
-Controllerless is a sample project that shows how to build applications based on message driven architectures that don't require the cruft of defining the service or presentation layer classes like Web API controllers or WCF services. The projects and samples in this repository is expected to grow over time. For now, don't expect this code to be hardened production ready code.
+**Controllerless** is a sample project that shows how to build applications based on message-driven architectures that don't require the cruft of defining the service or presentation-layer classes like Web API controllers or WCF services. The projects and samples in this repository are expected to grow over time. For now, don't expect this code to be hardened production-ready code.
 
 Currently the only supported project is the Controllerless Web API documentation generation project:
 
@@ -88,6 +88,17 @@ string xmlCommentsPath = HostingEnvironment.MapPath("~/App_Data/Contract.xml");
 c.IncludeXmlComments(xmlCommentsPath);
 ```
 
+This allows you to use XML documentation on your message such as follows:
+
+``` c#
+/// <summary>Commands an order to be shipped.</summary>
+public class ShipOrderCommand
+{
+    /// <summary>The id of the order.</summary>
+    public Guid OrderId { get; set; }
+}
+```
+
 On top of that you need to implement a custom `IOperationFilter` to allow your actions to have a description:
 
 ``` c#
@@ -96,11 +107,13 @@ sealed class ControllerlessActionOperationFilter : IOperationFilter
 {
     private readonly ITypeDescriptionProvider provider;
 
-    public ControllerlessActionOperationFilter(string xmlCommentsPath) {
+    public ControllerlessActionOperationFilter(string xmlCommentsPath)
+    {
         this.provider = new XmlDocumentationTypeDescriptionProvider(xmlCommentsPath);
     }
 
-    public void Apply(Operation operation, SchemaRegistry sr, ApiDescription desc) {
+    public void Apply(Operation operation, SchemaRegistry sr, ApiDescription desc)
+    {
         var descriptor = desc.ActionDescriptor as ControllerlessActionDescriptor;
         operation.summary = descriptor != null
             ? this.provider.GetDescription(descriptor.MessageType)
@@ -109,7 +122,7 @@ sealed class ControllerlessActionOperationFilter : IOperationFilter
 }
 ```
 
-This operation filter makes use of *Controllerless* to retrieve the description of a message type from the craeted `XmlDocumentationTypeDescriptionProvider`. `XmlDocumentationTypeDescriptionProvider` is a type provided by *Controllerless* and allows parsing an XML comment file. You can configure Swashbuckle to use this class as follows:
+This operation filter makes use of **Controllerless** to retrieve the description of a message type from the created `XmlDocumentationTypeDescriptionProvider`. `XmlDocumentationTypeDescriptionProvider` is a type provided by **Controllerless** and allows parsing an XML comment file. You can configure Swashbuckle to use this class as follows:
 
 ``` c#
 var filter = new ControllerlessActionOperationFilter(xmlCommentsPath);
