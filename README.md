@@ -52,7 +52,7 @@ var commandApiExplorer = new ControllerlessApiExplorer(
     // Prefix of your API. Defaults to "api/"
     ApiPrefix = "api/",
     // Name of the controller. Typically "commands" or "queries".
-	ControllerName = "commands",
+    ControllerName = "commands",
     // Parameter name for the action's parameter. The default value is 'message'.
     ParameterName = "command",
     // Delegate that returns the name of the action. The default returns 'messageType.Name'.
