@@ -85,7 +85,7 @@ The previous example works as is. After you plugin [Swashbuckle](https://github.
 // Part of your Swashbuckle config
 string xmlCommentsPath = HostingEnvironment.MapPath("~/App_Data/Contract.xml");
 
-c.IncludeXmlComments(xmlCommentsPath);
+swaggerDocsConfig.IncludeXmlComments(xmlCommentsPath);
 ```
 
 This allows you to use XML documentation on your message such as follows:
